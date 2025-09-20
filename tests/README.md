@@ -2,6 +2,7 @@
 
 ```bash
 # ensure you have pipx and pipenv installed
+https://github.com/pypa/pipx
 pipx install pipenv
 pipenv install
 pipenv shell
