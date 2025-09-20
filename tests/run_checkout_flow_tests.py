@@ -22,10 +22,14 @@ def run_tests_in_order():
     
     # Test files in order
     test_files = [
-        "test_checkout.py",  # First: checkout page tests
-        "test_checkout_to_confirmation_flow.py",  # Second: flow tests
-        "test_confirmationpage.py",  # Third: confirmation page tests
-        "test_slow_network_edge_cases.py",  # Fourth: slow network edge cases
+        "test_login.py",  # First: login tests
+        "test_homepage.py",  # Second: homepage tests
+        "test_favourites.py",  # Third: favourites tests
+        "test_checkout.py",  # Fourth: checkout page tests
+        "test_checkout_to_confirmation_flow.py",  # Fifth: flow tests
+        "test_confirmationpage.py",  # Sixth: confirmation page tests
+        "test_slow_network_edge_cases.py",  # Seventh: slow network edge cases
+        "fullprocess.py",  # Eighth: complete end-to-end flow
     ]
     
     results = {}
@@ -171,14 +175,44 @@ def run_slow_network_tests():
         sys.exit(1)
 
 
+def run_complete_flow():
+    """Run only the complete end-to-end flow test"""
+    
+    print("🎯 Running Complete End-to-End Flow Test")
+    print("=" * 60)
+    
+    try:
+        result = subprocess.run([
+            sys.executable, "-m", "pytest", 
+            "fullprocess.py", 
+            "-v", 
+            "--tb=short"
+        ], timeout=1200)  # 20 minutes timeout for complete flow
+        
+        if result.returncode == 0:
+            print("✅ Complete flow test PASSED")
+        else:
+            print("❌ Complete flow test FAILED")
+            sys.exit(1)
+            
+    except subprocess.TimeoutExpired:
+        print("⏰ Complete flow test TIMED OUT")
+        sys.exit(1)
+    except Exception as e:
+        print(f"💥 Complete flow test ERROR: {e}")
+        sys.exit(1)
+
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         if sys.argv[1] == "flow":
             run_specific_flow_tests()
         elif sys.argv[1] == "slow":
             run_slow_network_tests()
+        elif sys.argv[1] == "complete":
+            run_complete_flow()
         else:
-            print("Usage: python run_checkout_flow_tests.py [flow|slow]")
+            print("Usage: python run_checkout_flow_tests.py [flow|slow|complete]")
             sys.exit(1)
     else:
         run_tests_in_order()
